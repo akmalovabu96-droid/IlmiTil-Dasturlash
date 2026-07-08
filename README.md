@@ -14,7 +14,7 @@ Keling, dasturlash tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
 
 ### 1. O'zgaruvchi (`o'zg`) | Variable
 *   **Hayotiy o'xshatish:** Tasavvur qiling, uyingizda shakar solib qo'yiladigan maxsus quti bor. Qutining ustiga "shakar_idishi" deb yozib qo'ygansiz. Ichiga 5 kilo shakar soldingiz. Endi xonadoshingizga "shakar qayerda?" desangiz, u shakar idishini ko'rsatadi.
-*   **IlmiTil qoidasi:** Kompyuter hotirasida ma'lumot saqlash uchun idish (quti) ajratamiz va unga nom beramiz:
+*   **IlmiTil qoidasi:** Kompyuter xotirasida ma'lumot saqlash uchun idish (quti) ajratamiz va unga nom beramiz:
 
     ```text
     o'zg shakar_idishi = 5
@@ -42,7 +42,7 @@ Keling, dasturlash tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
     ```
 
 ### 4. Takrorlanish Tsikl (`toki`) | while
-*   **Hayotiy o'xshatish:** Choynakka suv to'ldiryapsiz. Choynak to'lmaguncha quyishda davom etasiz. Yoki mashinaga benzin quyayotganda, bak to'lguniga qadar pistolet ishlab turadi.
+*   **Hayotiy o'xshatish:** Choynakka suv to'ldiryapsiz. to choynak to'lmaguncha quyishda davom etasiz. Yoki mashinaga benzin quyayotganda, bak to'lguniga qadar pistolet ishlab turadi.
 *   **IlmiTil qoidasi:** Ma'lum bir shart bajarilmagunicha kodni qayta-qayta aylantirish:
 
     ```text
@@ -55,7 +55,7 @@ Keling, dasturlash tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
 
 ### 5. Vazifalar yoki Funksiyalar (`funksiya` va `qaytar`) | def/return
 *   **Hayotiy o'xshatish:** Bu xuddi oshxonadagi taom retseptiga o'xshaydi. Masalan, "Palov tayyorlash" degan umumiy rejangiz bor. Bu reja ichiga sabzi to'g'rash, go'sht qovurish, guruch solish kiradi. Siz har safar mehmonga palov qilganda noldan tushuntirmaysiz, shunchaki "Palov damlaymiz" deysiz (tayyor vazifani chaqirasiz) va oxirida stolga tayyor lagan (natija) **qaytadi**.
-*   **IlmiTil qoidasi:** Murakkab ishni bir marta blok qilib yozib, keyin faqat nomini aytib ishlatish:
+*   **IlmiTil qoidasi:** Murakkab ishni bir marta blok sifatida yozib, keyin faqat nomini aytib ishlatish:
 
     ```text
     funksiya yoshni_tekshir(yil):
