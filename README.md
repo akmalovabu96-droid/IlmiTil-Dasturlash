@@ -4,17 +4,17 @@
 
 **IlmiTil** — bu murakkab inglizcha terminlarsiz, mutlaqo sodda va ona tilimizda raqamli dasturlash mantiqini o'rganish uchun yaratilgan muhitdir. 
 
-Dasturlash — bu sehrgarlik emas. Bu shunchaki kompyuterga hayotiy, mantiqiy topshiriqlarni navbat bilan tushuntirishdir. Agar siz hayotda to'g'ri qarorlar qabul qila olsangiz va rejalar tuza olsangiz, demak, **IlmiTil** orqali dastur ham yoza olasiz!
+Dasturlash — bu sehrgarlik emas. Bu shunchaki kompyuterga hayotiy, mantiqiy topshiriqlarni navbat bilan tushuntirishdir. Agar siz hayotda to'g'ri qarorlar qabul qila olsangiz va rejalar tuza olsangiz, demak, dastlab **IlmiTil** orqali, keyinchalik dunyo miqyosdagi Python kabi dasturlash tillar orqali qiziqarli kod-vazifalar ham yoza olasiz!
 
 ---
 
 ## 🛠️ IlmiTil Qoidalari (Hayotiy misollar bilan)
 
-Keling, dasturlash tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
+Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
 
 ### 1. O'zgaruvchi (`o'zg`) | Variable
 *   **Hayotiy o'xshatish:** Tasavvur qiling, uyingizda shakar solib qo'yiladigan maxsus quti bor. Qutining ustiga "shakar_idishi" deb yozib qo'ygansiz. Ichiga 5 kilo shakar soldingiz. Endi xonadoshingizga "shakar qayerda?" desangiz, u shakar idishini ko'rsatadi.
-*   **IlmiTil qoidasi:** Kompyuter xotirasida ma'lumot saqlash uchun idish (quti) ajratamiz va unga nom beramiz:
+*   **IlmiTil qoidasi:** Kompyuter RAM (vaqtinchalik) xotirasida ma'lumot saqlash uchun idish (quti) ajratamiz va unga nom beramiz:
 
     ```text
     o'zg shakar_idishi = 5
@@ -42,8 +42,8 @@ Keling, dasturlash tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
     ```
 
 ### 4. Takrorlanish Tsikl (`toki`) | while
-*   **Hayotiy o'xshatish:** Choynakka suv to'ldiryapsiz. to choynak to'lmaguncha quyishda davom etasiz. Yoki mashinaga benzin quyayotganda, bak to'lguniga qadar pistolet ishlab turadi.
-*   **IlmiTil qoidasi:** Ma'lum bir shart bajarilmagunicha kodni qayta-qayta aylantirish:
+*   **Hayotiy o'xshatish:** Choynakka suv to'ldiryapsiz. To choynak to'lmaguncha quyishda davom etasiz. Yoki mashinaga benzin quyayotganda, bak to'lguniga qadar pistolet ishlab turadi.
+*   **IlmiTil qoidasi:** Ma'lum bir shart bajarilmagunicha kodni qayta-qayta aylantirish(ishlatish):
 
     ```text
     o'zg suv_miqdori = 1
@@ -55,7 +55,7 @@ Keling, dasturlash tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
 
 ### 5. Vazifalar yoki Funksiyalar (`funksiya` va `qaytar`) | def/return
 *   **Hayotiy o'xshatish:** Bu xuddi oshxonadagi taom retseptiga o'xshaydi. Masalan, "Palov tayyorlash" degan umumiy rejangiz bor. Bu reja ichiga sabzi to'g'rash, go'sht qovurish, guruch solish kiradi. Siz har safar mehmonga palov qilganda noldan tushuntirmaysiz, shunchaki "Palov damlaymiz" deysiz (tayyor vazifani chaqirasiz) va oxirida stolga tayyor lagan (natija) **qaytadi**.
-*   **IlmiTil qoidasi:** Murakkab ishni bir marta blok sifatida yozib, keyin faqat nomini aytib ishlatish:
+*   **IlmiTil qoidasi:** Murakkab ishni bir marta blok sifatida yozib, keyin faqat nomini e'lon qilib ishlatish:
 
     ```text
     funksiya yoshni_tekshir(yil):
