@@ -32,6 +32,7 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
 ### 3. Interaktiv Muloqot (`kirit`) *Yangi v1.1* | input
 *   **Hayotiy o'xshatish:** Sizdan savol so'rashdi, siz javob berdingiz. Eslab qoldingiz.
 *   **IlmiTil qoidasi:** Dastur ishlayotgan vaqtda ekranda chiroyli oyna ochiladi, foydalanuvchidan matn so'raydi va uni xotiraga saqlaydi:
+
     ```text
     o'zg ism = kirit("Ismingizni kiriting: ")
 
