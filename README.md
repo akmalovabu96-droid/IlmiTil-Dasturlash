@@ -13,7 +13,7 @@ Dasturlash — bu sehrgarlik emas. Bu shunchaki kompyuterga hayotiy, mantiqiy to
 Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bog'lab o'tamiz:
 
 ### 1. O'zgaruvchi (`o'zg`) | Variable
-*   **Hayotiy o'xshatish:** Tasavvur qiling, uyingizda shakar solib qo'yiladigan maxsus quti bor. Qutining ustiga "shakar_idishi" deb yozib qo'ygansiz. Ichiga 5 kilo shakar soldingiz. Endi xonadoshingizga "shakar qayerda?" desangiz, u shakar idishini ko'rsatadi.
+*   **Hayotiy o'xshatish:** Tasavvur qiling, shakar solib qo'yiladigan maxsus quti bor. Qutining ustiga "shakar_idishi" deb yozib qo'ygansiz. Ichiga 5 kilo shakar soldingiz. Endi xonadoshingizga "shakar qayerda?" desangiz, u shakar idishini ko'rsatadi.
 *   **IlmiTil qoidasi:** Kompyuter RAM (vaqtinchalik) xotirasida ma'lumot saqlash uchun idish (quti) ajratamiz va unga nom beramiz:
 
     ```text
@@ -26,6 +26,17 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
 
     ```text
     yoz("Assalomu alaykum!")
+    Konsoldagi natija: Assalomu alaykum!
+    ```
+
+### 3. Interaktiv Muloqot (`kirit`) *Yangi v1.1* | input
+*   **Hayotiy o'xshatish:** Sizdan savol so'rashdi, siz javob berdingiz. Eslab qoldingiz.
+*   **IlmiTil qoidasi:** Dastur ishlayotgan vaqtda ekranda chiroyli oyna ochiladi, foydalanuvchidan matn so'raydi va uni xotiraga saqlaydi:
+    ```text
+    o'zg ism = kirit("Ismingizni kiriting: ")
+
+    Ishga tushirish tugmasini bosdingiz -> Oyna chiqadi -> OK
+    Konsoldagi natija: Siz oynaga kiritgan narsa chiqadi
     ```
 
 ### 3. Shartlar (`agar` va `yo'qsa`) | if/else
@@ -38,7 +49,9 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
     agar ob_havo == "yomg'ir":
         yoz("Soyabon oling!")
     yo'qsa:
-        yoz("Quyoshli kun, yaxshi aylaning!")
+        yoz("Batafsilroq izlaning, darrov chiqmang.")
+
+    Konsoldagi natija: Soyabon oling! # Chunki o'zgaruvchiga "yomg'ir" degan qiymat saqlangan.
     ```
 
 ### 4. Takrorlanish Tsikl (`toki`) | while
@@ -51,7 +64,15 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
     toki suv_miqdori <= 3:
         yoz("Choynakka suv quyilmoqda...")
         suv_miqdori = suv_miqdori + 1
+
+    Konsoldagi natija: Choynakka suv quyilmoqda...Choynakka suv quyilmoqda...Choynakka suv quyilmoqda... # bu yerda to'xtaydi
     ```
+
+### 6. Kengaytirilgan Matematika moduli *Yangi v1.1* | math
+*   **Hayotiy o'xshatish:** Kundalik hayotda yer maydoningiz kvadratini hisoblash yoki murakkab matematik ildizlarni topish kerak bo'ladi.
+*   **IlmiTil qoidasi:** Endi til ichida o'zbekcha matematik buyruqlar bor:
+    *   `daraja(asos, ko'rsatkich)` — sonni darajaga ko'tarish (Masalan: `daraja(5, 2)` -> 25.0)
+    *   `ildiz(son)` — sondan kvadrat ildiz chiqarish (Masalan: `ildiz(81)` -> 9.0)
 
 ### 5. Vazifalar yoki Funksiyalar (`funksiya` va `qaytar`) | def/return
 *   **Hayotiy o'xshatish:** Bu xuddi oshxonadagi taom retseptiga o'xshaydi. Masalan, "Palov tayyorlash" degan umumiy rejangiz bor. Bu reja ichiga sabzi to'g'rash, go'sht qovurish, guruch solish kiradi. Siz har safar mehmonga palov qilganda noldan tushuntirmaysiz, shunchaki "Palov damlaymiz" deysiz (tayyor vazifani chaqirasiz) va oxirida stolga tayyor lagan (natija) **qaytadi**.
@@ -64,6 +85,8 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
 
     o'zg otamning_yoshi = yoshni_tekshir(1970)
     yoz(otamning_yoshi)
+
+    Konsoldagi natija: 56
     ```
 
 ### 6. Izohlar (`#`) | Comments
@@ -78,6 +101,9 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
 
 ## 🎨 IlmiTil Dasturining Qulayliklari
 Dasturni ochganingizda sizga yordam beruvchi ajoyib imkoniyatlar yaratilgan:
+*   **Fayllar tizimi (Yangi v1.1):** Tepadagi **"Fayl"** menyusi orqali kodlaringizni `.ilmt` kengaytmasidagi fayl sifatida kompyuterga saqlashingiz va oldin yozilgan kodlarni qayta ochishingiz mumkin.
+*   **Tayyor Namunalar (Yangi v1.1):** Tepadagi **"Namunalar"** menyusi orqali bitta klik bilan tayyor kod andozalarini (O'zgaruvchiga ma'lumot saqlash, Muloqot yoki Matematika namunalarini) ekranga yuklab, darhol "Ishga tushirish" tugmasini bosish orqali sinab ko'rishingiz mumkin.
+*   **Konsolni Tozalash (Yangi v1.1):** Eski dastur natijalari aralashib ketmasligi uchun supurgi tugmasi orqali konsol ekranini bir marta tozalab tashlashingiz mumkin.
 *   **IlmiTil Qo'llanmasi (Chap tomonda):** Qoidalar har doim ko'z oldingizda turadi, adashib ketmaysiz.
 *   **Avtomatik Otstup (Joy tashlash):** `agar`, `toki` yoki `funksiya` yozib, `Enter` tugmasini bossangiz, dastur o'zi avtomat ravishda ichkariga 4 ta joy tashlab beradi. Masofani qo'lda sanab o'tirmaysiz!
 *   **Tungi Rejim (Dark Mode):** Kechasi ko'zingiz charchamasligi uchun pastdagi tugma orqali ekranni qorong'u rejimiga o'tkazishingiz mumkin.
