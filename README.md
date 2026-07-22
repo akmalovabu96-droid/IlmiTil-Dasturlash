@@ -102,7 +102,7 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
 
 ## 🎨 IlmiTil Dasturining Qulayliklari
 Dasturni ochganingizda sizga yordam beruvchi ajoyib imkoniyatlar yaratilgan:
-*   **Fayllar tizimi (Yangi v1.1):** Tepadagi **"Fayl"** menyusi orqali kodlaringizni `.ilmt` kengaytmasidagi fayl sifatida kompyuterga saqlashingiz va oldin yozilgan kodlarni qayta ochishingiz mumkin.
+*   **Fayllar tizimi (Yangi v1.1):** Tepadagi **"Fayl"** menyusi orqali kodlaringizni `.ilmt` kengaytmadagi faylda kompyuterga saqlashingiz va oldin yozilgan kodlarni qayta ochishingiz mumkin.
 *   **Tayyor Namunalar (Yangi v1.1):** Tepadagi **"Namunalar"** menyusi orqali bitta klik bilan tayyor kod andozalarini (O'zgaruvchiga ma'lumot saqlash, Muloqot yoki Matematika namunalarini) ekranga yuklab, darhol "Ishga tushirish" tugmasini bosish orqali sinab ko'rishingiz mumkin.
 *   **Konsolni Tozalash (Yangi v1.1):** Eski dastur natijalari aralashib ketmasligi uchun supurgi tugmasi orqali konsol ekranini bir marta tozalab tashlashingiz mumkin.
 *   **IlmiTil Qo'llanmasi (Chap tomonda):** Qoidalar har doim ko'z oldingizda turadi, adashib ketmaysiz.
