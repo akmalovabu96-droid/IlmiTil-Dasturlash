@@ -26,10 +26,11 @@ def custom_kirit(savol_matni="Ma'lumot kiriting:"):
     # Agar foydalanuvchi bekor qilsa, kod buzilmasligi uchun bo'sh string qaytaramiz
     return javob if javob is not None else ""
 
+
 def execute_uz_code(uz_code_text, output_widget):
     """Oynadagi kodni olib, uni o'giradigan va bajaradigan funksiya"""
     output_widget.delete("1.0", tk.END)
-    # Python’ning standart chiqishini (print) o'zgartiramiz, shunda u konsolga emas, balki bizning kod yozish oynamizga yozadi.
+
     class CustomOutput:
         def write(self, text):
             output_widget.insert(tk.END, text)
@@ -40,22 +41,44 @@ def execute_uz_code(uz_code_text, output_widget):
     sys.stdout = CustomOutput()
 
     try:
+        # Lug'atni tozalaymiz
+        CLEAN_UZ_TO_PY = {k.strip(): v.strip() for k, v in UZ_TO_PY.items()}
+
         uz_lines = uz_code_text.splitlines()
         py_code = []
 
         for line in uz_lines:
             translated_line = line
+
+            # 1. "o'zg " so'zini olib tashlaymiz
             if "o'zg " in translated_line:
                 translated_line = translated_line.replace("o'zg ", "")
-            for uz_word, py_word in UZ_TO_PY.items():
+
+            # Bu qoida faqat ikkitalik qo'shtirnoqlarni ajratadi
+            strings_found = re.findall(r'"[^"\\]*(?:\\[\s\S][^"\\]*)*"', translated_line)
+
+            for i, s in enumerate(strings_found):
+                translated_line = translated_line.replace(s, f"__STR_{i}__")
+
+            # Bemalol o'zbekcha so'zlarni Python so'zlariga almashtirsak bo'ladi.
+            # Endi \b ishlatish shart emas, chunki qo'shtirnoqlar xavfsiz joyda.
+            for uz_word, py_word in CLEAN_UZ_TO_PY.items():
+                # Agar lug'atdagi so'z satr ichida bo'lsa (masalan "yo'qsa:")
                 if uz_word in translated_line:
+                    # Uni to'g'ridan-to'g'ri almashtiramiz
                     translated_line = translated_line.replace(uz_word, py_word)
+
+            # 4. Tarjima tugagach, berkitib qo'yilgan qo'shtirnoqli matnlarni o'z joyiga qaytaramiz
+            for i, s in enumerate(strings_found):
+                translated_line = translated_line.replace(f"__STR_{i}__", s)
+
             py_code.append(translated_line)
 
         final_python_script = "\n".join(py_code)
+
         global_env = {
             "print": sys.stdout.write,
-            "kirit": custom_kirit,  # kirit buyrug'ini oynaga bog'laymiz
+            "kirit": custom_kirit,
             "butson": int,
             "matn": str,
             "ildiz": math.sqrt,
@@ -68,11 +91,12 @@ def execute_uz_code(uz_code_text, output_widget):
     finally:
         sys.stdout = sys.__stdout__
 
+
 def clear_console(output_widget):
     output_widget.delete("1.0", tk.END)
 
 # AUTO INDENTATION(OTSTUP) FUNKSIYASI
-def auto_indent(event, code_editor, line_label):
+def auto_indent(event, code_editor):
     """ikki nuqta bor qatordan keyin avtomatik 4 ta bo'shliq (:)"""
     # kursor joylashgan qatorning indeksini olish
     current_index = code_editor.index(tk.INSERT)
@@ -116,25 +140,44 @@ def highlight_syntax(event, code_editor):
         code_editor.tag_config("function", foreground="#6f42c1")
         code_editor.tag_config("string", foreground="#032f62")
         code_editor.tag_config("number", foreground="#e36209")
-        code_editor.tag_config("comment", foreground="#6a737d",font=("Consolas", 12, "italic"))  # Спокойный серый курсив для светлой темы
+        code_editor.tag_config("comment", foreground="#6a737d", font=("Consolas", 12, "italic"))
 
     content = code_editor.get("1.0", tk.END)
 
-    rules = [
-        ("keyword", r"\b(agar|yo'qsa|toki|funksiya|qaytar)\b"),
-        ("storage", r"\bo'zg\b"),
-        ("function", r"\b(yoz|kirit||ildiz|daraja|butson|matn)\b"),
-        ("number", r"\b\d+\b"),
+    # 1. Avval faqat qo'shtirnoqlar va izohlarni bo'yaymiz (bular mustaqil qoidalar)
+    base_rules = [
         ("string", r'"[^"\\]*(?:\\.[^"\\]*)*"'),
         ("comment", r"#.*")
     ]
-
-    for tag_name, pattern in rules:
+    for tag_name, pattern in base_rules:
         for match in re.finditer(pattern, content):
-            start_pos = f"1.0 + {match.start()} chars"
-            end_pos = f"1.0 + {match.end()} chars"
-            code_editor.tag_add(tag_name, start_pos, end_pos)
+            code_editor.tag_add(tag_name, f"1.0 + {match.start()} chars", f"1.0 + {match.end()} chars")
 
+    # 2. Endi kalit so'zlar, funksiyalar va sonlarni bo'yaymiz.
+    # DIQQAT: Biz pattern boshiga va oxiriga qo'shtirnoq ichida bo'lmaslik qoidasini qo'shdik!
+    advanced_rules = [
+        ("keyword", r"\b(agar|yo'qsa|toki|funksiya|qaytar)\b"),
+        ("storage", r"\bo'zg\b"),
+        ("function", r"\b(yoz|kirit|ildiz|daraja|butson|matn)\b"),
+        ("number", r"\b\d+\b")
+    ]
+
+    for tag_name, pattern in advanced_rules:
+        for match in re.finditer(pattern, content):
+            start_idx = match.start()
+            end_idx = match.end()
+
+            # Tekshiruv: Agar ushbu topilgan so'z ALLAQACHON "string" yoki "comment" tegi ichida bo'lsa, uni bo'yamaymiz
+            # Tkinter'ning tag_names funksiyasi o'sha harfda qanday teglar borligini aytadi
+            current_tags = code_editor.tag_names(f"1.0 + {start_idx} chars")
+            if "string" in current_tags or "comment" in current_tags:
+                continue
+
+            code_editor.tag_add(tag_name, f"1.0 + {start_idx} chars", f"1.0 + {end_idx} chars")
+
+    # Xavfsizlik uchun qatlamlarni ko'tarib qo'yamiz
+    code_editor.tag_raise("string")
+    code_editor.tag_raise("comment")
 
 def load_template(template_name, code_editor):
     """Oynadan tanlangan variantni kod yozish maydoniga chiqarib beradi"""
@@ -143,7 +186,7 @@ def load_template(template_name, code_editor):
             "# 1. Oddiy ma'lumot saqlash\n"
             "o'zg x = 5\n"
             "yoz(x)\n\n"
-            "# Agar matn chiqarmoqchi bo'lsangiz, \"x = \" dan keyin qo'shtirnoqlar qo'yib, ichiga so'zni qo'shing."
+            "# Agar matn chiqarmoqchi bo'lsangiz, x =  dan keyin qo'shtirnoqlar qo'yib, ichiga so'zni qo'shing."
         ),
         "muloqot": (
             "# 2. Interaktiv muloqot va shartlar\n"
@@ -161,7 +204,8 @@ def load_template(template_name, code_editor):
             "o'zg ildiz_son = ildiz(81)  # 81 ning ildizi\n\n"
             "yoz(\"5 ning kvadrati: \")\n"
             "yoz(kvadrat)\n"
-            "yoz(\"81 ning kvadrat ildizi: \") # 81'dan oldin \\n yozib qo'ying. Bu ushbu qatorni keyingisiga o'tkazadi\n"
+            "yoz('\\n')\n"
+            "yoz(\"81 ning kvadrat ildizi: \")\n"
             "yoz(ildiz_son)\n"
         )
     }
@@ -182,7 +226,7 @@ def save_file(code_editor):
         try:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(code_editor.get("1.0", tk.END).strip())
-            messagebox.showinfo("Yaxshi", "Kod muvaffaqiyatli saqlandi! 🎉")
+            messagebox.showinfo("Yaxshi", "Kod muvaffaqiyatli saqlandi!")
         except Exception as e:
             messagebox.showerror("Xatolik", f"Faylni saqlashda xatolik yuz berdi:\n{e}")
 
@@ -258,7 +302,7 @@ def toggle_theme(window, help_panel, help_title, help_desc, main_area, code_labe
 # ASOSIY MUHARRIR OYNASINI SOZLASH FUNKSIYASI
 def create_gui():
     window = tk.Tk()
-    window.title("IlmiTil Dasturlash Muhiti v1.1")
+    window.title("IlmiTil Dasturlash Muhiti v1.2")
     window.geometry("950x650")
     window.configure(bg="#f0f2f5")
 
@@ -312,7 +356,7 @@ def create_gui():
     main_area = tk.Frame(window, bg="#f0f2f5")
     main_area.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-    # 1. Заголовок редактора
+    # 1. Muharrir sarlavhasi
     code_label = tk.Label(main_area, text="Kod yozish maydoni", font=("Arial", 12, "bold"), bg="#f0f2f5", fg="#3c4043")
     code_label.pack(anchor="w", pady=(0, 5))
 
@@ -325,11 +369,11 @@ def create_gui():
     starter_code = "# Interaktiv dastur\no'zg ism = kirit('Ismingizni kiriting:')\nyoz('Assalomu aleykum, ' + ism + '! Virtual miyam sizni qabul qildi.')"
     code_editor.insert(tk.END, starter_code)
 
-    # Привязки событий
+    # Eventlarning bog'lanishi
     code_editor.bind("<Return>", lambda event: auto_indent(event, code_editor))
     code_editor.bind("<KeyRelease>", lambda event: [highlight_syntax(event, code_editor)])
     highlight_syntax(None, code_editor)
-    # 3. Контейнер для кнопок управления (кладем внутрь top_layout_frame, чтобы он не улетал вниз)
+    # 3. Boshqaruv tugmalar konteyneri
     button_frame = tk.Frame(main_area, bg="#f0f2f5")
     button_frame.pack(pady=10)
 
