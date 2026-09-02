@@ -12,12 +12,69 @@ UZ_TO_PY = {
     "toki ": "while ",
     "funksiya ": "def ",
     "qaytar ": "return ",
-    "kirit": "kirit"
+    "kirit": "kirit",
+    "va": "and",
+    "yoki": "or",
+    "urin:": "try:",
+    "xatoda:": "except:",
+    "nihoyat:": "finally:",
+    "sinf": "class"
 }
 
 # Tungi rejimi bayrog'i
 is_dark_mode = False
 current_file_path = None
+
+
+def translate_error(error_message):
+    """Python xatolik xabarlarini to'liq o'zbek tiliga o'giruvchi funksiya"""
+    err_str = str(error_message)
+
+    # Eng ko'p uchraydigan aniq (obvious) xatoliklar lug'ati
+    ERROR_TRANSLATIONS = {
+        # --- NameError (Topilmagan o'zgaruvchilar) ---
+        "name '": "Xatolik: '",
+        "' is not defined": "' degan buyruq, o'zgaruvchi yoki sinf topilmadi (e'lon qilinmagan)",
+
+        # --- ZeroDivisionError (Matematik xatolar) ---
+        "division by zero": "Sonni nolga bo'lib bo'lmaydi!",
+
+        # --- TypeError (Ma'lumot turlari chalkashligi) ---
+        "can only concatenate str (not \"int\") to str": "Matnga faqat matnni qo'shish mumkin (sonni emas). 'matn()' funksiyasidan foydalaning",
+        "can only concatenate str (not \"float\") to str": "Matnga faqat matnni qo'shish mumkin (o'nlik sonni emas). 'matn()' funksiyasidan foydalaning",
+        "unsupported operand type(s) for": "Ushbu ma'lumot turlari o'rtasida matematik amalni bajarib bo'lmaydi:",
+        "not all arguments converted during string formatting": "Matnni formatlashda yoki qoldiq olish (%) amalida xatolik bor",
+
+        # --- ValueError (Noto'g'ri qiymatlar) ---
+        "invalid literal for int() with base 10": "Ushbu kiritilgan matnni butun songa (butson) o'tkazib bo'lmaydi. Faqat raqam kiriting:",
+        "math domain error": "Matematik xatolik (masalan, manfiy sonni ildizdan chiqarishga urindingiz)!",
+
+        # --- SyntaxError (Sintaksis va imlo xatolari) ---
+        "invalid syntax": "Sintaksis xato (buyruq noto'g'ri yozilgan yoki qator oxirida ikki nuqta ':' esdan chiqqan)",
+        "unmatched ')'": "Yopilmagan qavs xatoligi! Ochilgan qavslar sonini tekshiring: ')'",
+        "unmatched '('": "Ochilmagan qavs xatoligi! Qavslar juftligini tekshiring: '('",
+        "was never closed": "matni yoki qavsi oxirigacha yopilmay qolib ketgan",
+        "unterminated string literal": "Qo'shtirnoq yopilmay qolgan! Matn boshlangan qo'shtirnoqni oxirida yopishni unutmang",
+
+        # --- IndentationError (Bo'shliq va surilish xatolari) ---
+        "expected an indented block": "Bo'shliq (indentation) tashlanishi kerak edi. 'agar', 'toki', 'funksiya' yoki 'sinf' ichidagi qatorni 4 ta bo'shliq o'ngga suring",
+        "unexpected indent": "Kutilmagan bo'shliq! Qator boshidagi ortiqcha yoki adashib qo'yilgan bo'shliqlarni o'chiring",
+        "unindent does not match any outer indentation level": "Blokdan chiqishda bo'shliq mos kelmadi. Qator boshidagi surilish darajasini tekshiring",
+
+        # --- IndexError (Ro'yxat indeks xatolari) ---
+        "list index out of range": "Ro'yxat indeksi chegaradan chiqib ketdi! Mavjud bo'lmagan elementga murojaat qilyapsiz",
+
+        # --- AttributeError (Obyekt xususiyat xatolari) ---
+        "object has no attribute": "obyektida bunday xususiyat yoki funksiya mavjud emas"
+    }
+
+    # Xatolik xabarini o'zbekcha talqinlar bilan almashtirib chiqamiz
+    for eng_err, uz_err in ERROR_TRANSLATIONS.items():
+        if eng_err in err_str:
+            err_str = err_str.replace(eng_err, uz_err)
+
+    return err_str
+
 
 def custom_kirit(savol_matni="Ma'lumot kiriting:"):
     """Ma'lumotlarni kiritish oynasi kirit() buyrug'i uchun"""
@@ -87,7 +144,8 @@ def execute_uz_code(uz_code_text, output_widget):
         exec(final_python_script, global_env)
 
     except Exception as e:
-        output_widget.insert(tk.END, f"\nXatolik yuz berdi:\n{e}")
+        uz_error = translate_error(e)
+        output_widget.insert(tk.END, f"\nXatolik yuz berdi:\n{uz_error}")
     finally:
         sys.stdout = sys.__stdout__
 
@@ -121,10 +179,30 @@ def auto_indent(event, code_editor):
 
     return "break"
 
+def update_line_numbers(event, editor, number_bar):
+    """Kod maydonidagi qatorlar soniga qarab chap paneldagi raqamlarni yangilaydi"""
+    # Kod muharriridagi jami qatorlar sonini aniqlaymiz
+    end_index = editor.index('end-1c')
+    num_lines = int(end_index.split('.')[0])
+
+    # Raqamlar yoziladigan panelni tahrirlash uchun ochamiz
+    number_bar.config(state=tk.NORMAL)
+    number_bar.delete('1.0', tk.END)
+
+    # Raqamlarni ketma-ket yozib chiqamiz
+    line_numbers_string = "\n".join(str(i) for i in range(1, num_lines + 1))
+    number_bar.insert('1.0', line_numbers_string)
+
+    # Panelni yana yopamiz
+    number_bar.config(state=tk.DISABLED)
+
+    # Skrollarni sinxronlashtiramiz
+    number_bar.yview_moveto(editor.yview()[0])
+
 
 # SINTAKSISNI RANG-BARANG YORITISH FUNKSIYASI
 def highlight_syntax(event, code_editor):
-    for tag in ["keyword", "storage", "function", "string", "number", "comment"]:
+    for tag in ["keyword", "storage", "function", "string", "number", "comment", "self"]:
         code_editor.tag_remove(tag, "1.0", tk.END)
 
     if is_dark_mode:
@@ -134,6 +212,7 @@ def highlight_syntax(event, code_editor):
         code_editor.tag_config("string", foreground="#f1fa8c")
         code_editor.tag_config("number", foreground="#bd93f9")
         code_editor.tag_config("comment", foreground="#6272a4", font=("Consolas", 12, "italic"))
+        code_editor.tag_config("self", foreground="#ffb86c", font=("Consolas", 12))
     else:
         code_editor.tag_config("keyword", foreground="#d73a49", font=("Consolas", 12, "bold"))
         code_editor.tag_config("storage", foreground="#005cc5", font=("Consolas", 12, "bold"))
@@ -141,6 +220,7 @@ def highlight_syntax(event, code_editor):
         code_editor.tag_config("string", foreground="#032f62")
         code_editor.tag_config("number", foreground="#e36209")
         code_editor.tag_config("comment", foreground="#6a737d", font=("Consolas", 12, "italic"))
+        code_editor.tag_config("self", foreground="#e36209", font=("Consolas", 12))
 
     content = code_editor.get("1.0", tk.END)
 
@@ -156,10 +236,11 @@ def highlight_syntax(event, code_editor):
     # 2. Endi kalit so'zlar, funksiyalar va sonlarni bo'yaymiz.
     # DIQQAT: Biz pattern boshiga va oxiriga qo'shtirnoq ichida bo'lmaslik qoidasini qo'shdik!
     advanced_rules = [
-        ("keyword", r"\b(agar|yo'qsa|toki|funksiya|qaytar)\b"),
+        ("keyword", r"\b(agar|yo'qsa|toki|funksiya|qaytar|va|yoki|sinf|urin|xatoda|nihoyat)\b"),
         ("storage", r"\bo'zg\b"),
         ("function", r"\b(yoz|kirit|ildiz|daraja|butson|matn)\b"),
-        ("number", r"\b\d+\b")
+        ("number", r"\b\d+\b"),
+        ("self", r"\bself\b")
     ]
 
     for tag_name, pattern in advanced_rules:
@@ -207,7 +288,30 @@ def load_template(template_name, code_editor):
             "yoz('\\n')\n"
             "yoz(\"81 ning kvadrat ildizi: \")\n"
             "yoz(ildiz_son)\n"
-        )
+        ),
+        "oop_and_try_exc": (
+            "# 3. Sinf (Class) va Obyektlar bilan ishlash\n"
+            "sinf Shaxs:\n"
+            "    funksiya __init__(self, ism, yosh):\n"
+            "        self.ism = ism\n"
+            "        self.yosh = yosh\n\n"
+            "    funksiya tanish(self):\n"
+            "        qaytar \"Salom, mening ismim \" + self.ism + \". Yoshim \" + matn(self.yosh) + \"da.\"\n\n"
+            "# Merosxo'rlik (Inheritance) mantiqi\n"
+            "sinf Dasturchi(Shaxs):\n"
+            "    funksiya __init__(self, ism, yosh, til):\n"
+            "        Shaxs.__init__(self, ism, yosh)\n"
+            "        self.til = til\n\n"
+            "    funksiya malumot(self):\n"
+            "        qaytar self.tanish() + \" Men \" + self.til + \" tilida kod yozaman.\"\n\n"
+            "# Obyekt yaratish va xatoliklarni tekshirish\n"
+            "urin:\n"
+            "    o'zg odam = Dasturchi(\"Ali\", 20, \"IlmiTil\")\n"
+            "    yoz(odam.malumot())\n"
+            "xatoda:\n"
+            "    yoz(\"Sinf bilan ishlashda xatolik yuz berdi!\")\n"
+        ),
+
     }
 
     if template_name in templates:
@@ -215,24 +319,51 @@ def load_template(template_name, code_editor):
         code_editor.insert("1.0", templates[template_name])
         highlight_syntax(None, code_editor)
 
+def save_file_as(code_editor, window):
+    """Faylni har doim yangi nom va manzil so'rab saqlaydigan funksiya (Save As)"""
+    global current_file_path
 
-def save_file(code_editor):
-    """Joriy kodni .ilmt fayliga saqlash uchun messagebox chaqiriladi"""
     file_path = filedialog.asksaveasfilename(
         defaultextension=".ilmt",
         filetypes=[("IlmiTil fayllari", "*.ilmt"), ("Barcha fayllar", "*.*")]
     )
+
     if file_path:
         try:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(code_editor.get("1.0", tk.END).strip())
-            messagebox.showinfo("Yaxshi", "Kod muvaffaqiyatli saqlandi!")
+
+            # Global manzilni yangilaymiz va oyna sarlavhasiga fayl nomini chiqaramiz
+            current_file_path = file_path
+            file_name = file_path.split('/')[-1]
+            window.title(f"IlmiTil Dasturlash Muhiti v1.2 - {file_name}")
+
+            messagebox.showinfo("Muvaffaqiyat", "Fayl muvaffaqiyatli saqlandi!")
         except Exception as e:
             messagebox.showerror("Xatolik", f"Faylni saqlashda xatolik yuz berdi:\n{e}")
 
 
-def open_file(code_editor):
+def save_file(code_editor, window):
+    """Joriy fayl ustiga tezkor saqlash funksiyasi (Save)"""
+    global current_file_path
+
+    # Agar fayl avval saqlangan bo'lsa, to'g'ridan-to'g'ri ustiga yozadi
+    if current_file_path:
+        try:
+            with open(current_file_path, "w", encoding="utf-8") as file:
+                file.write(code_editor.get("1.0", tk.END).strip())
+            messagebox.showinfo("Yaxshi", "O'zgarishlar saqlandi!")
+        except Exception as e:
+            messagebox.showerror("Xatolik", f"Faylni saqlashda xatolik yuz berdi:\n{e}")
+    else:
+        # Agar fayl mutlaqo yangi bo'lsa, Save As funksiyasini chaqirib yuboradi
+        save_file_as(code_editor, window)
+
+
+def open_file(code_editor, window, line_number_bar):
     """.ilmt faylini ochib kod muharririga yuklaydi"""
+    global current_file_path
+
     file_path = filedialog.askopenfilename(
         filetypes=[("IlmiTil fayllari", "*.ilmt"), ("Barcha fayllar", "*.*")]
     )
@@ -243,30 +374,21 @@ def open_file(code_editor):
             code_editor.delete("1.0", tk.END)
             code_editor.insert("1.0", code_content)
 
+            current_file_path = file_path
+            file_name = file_path.split('/')[-1]
+            window.title(f"IlmiTil Dasturlash Muhiti v1.2 - {file_name}")  # Sarlavha yangilanadi
             # Yuklangan fayl uchun sintaksisni yangilaymiz
-            highlight_syntax(None, code_editor)
+            window.after(100, lambda: (
+                highlight_syntax(None, code_editor),
+                update_line_numbers(None, code_editor, line_number_bar)
+            ))
         except Exception as e:
             messagebox.showerror("Xatolik", f"Faylni ochishda xatolik yuz berdi:\n{e}")
 
-def save_file_as(code_editor, window):
-    global current_file_path
-    file_path = filedialog.asksaveasfilename(
-        defaultextension=".ilmt",
-        filetypes=[("IlmiTil fayllari", "*.ilmt"), ("Barcha fayllar", "*.*")]
-    )
-    if file_path:
-        try:
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(code_editor.get("1.0", tk.END).strip())
-            current_file_path = file_path
-            window.title(f"IlmiTil Dasturlash Muhiti v1.0 - {file_path.split('/')[-1]}")
-            messagebox.showinfo("Muvaffaqiyat", "Fayl muvaffaqiyatli yaratildi va saqlandi!")
-        except Exception as e:
-            messagebox.showerror("Xatolik", f"Faylni saqlashda xatolik yuz berdi:\n{e}")
-
 # EKRAN REJIMI FUNKSIYASI
 def toggle_theme(window, help_panel, help_title, help_desc, main_area, code_label, code_editor, run_button,
-                 output_label, theme_button, file_menu, examples_menu, menu_bar, button_frame):
+                 output_label, theme_button, file_menu, examples_menu, menu_bar, button_frame, editor_frame,
+                 line_number_bar):
     global is_dark_mode
     is_dark_mode = not is_dark_mode
 
@@ -278,6 +400,8 @@ def toggle_theme(window, help_panel, help_title, help_desc, main_area, code_labe
         main_area.configure(bg="#1e1e1e")
         code_label.configure(bg="#1e1e1e", fg="#e8eaed")
         code_editor.configure(bg="#2d2d2d", fg="#ffffff", insertbackground="white")
+        editor_frame.config(bg="#1e1e1e", bd=1, relief=tk.FLAT)
+        line_number_bar.config(bg="#1e1e1e", fg="#858585", selectbackground="#44475a")
         output_label.configure(bg="#1e1e1e", fg="#e8eaed")
         theme_button.configure(text="☀️ Kunduzgi rejim", bg="#3c4043", fg="#ffffff")
         file_menu.configure(bg="#2d2d2d", fg="#ffffff", activebackground="#3c4043", activeforeground="#ffffff")
@@ -291,6 +415,8 @@ def toggle_theme(window, help_panel, help_title, help_desc, main_area, code_labe
         main_area.configure(bg="#f0f2f5")
         code_label.configure(bg="#f0f2f5", fg="#3c4043")
         code_editor.configure(bg="#ffffff", fg="#202124", insertbackground="black")
+        editor_frame.config(bg="#f0f0f0", bd=1, relief=tk.SOLID)
+        line_number_bar.config(bg="#f0f0f0", fg="#a0a0a0", selectbackground="#ececec")
         output_label.configure(bg="#f0f2f5", fg="#3c4043")
         theme_button.configure(text="🌙 Tungi rejim", bg="#ffffff", fg="#3c4043")
         file_menu.configure(bg="#ffffff", fg="#3c4043", activebackground="#e8eaed", activeforeground="#000000")
@@ -302,7 +428,7 @@ def toggle_theme(window, help_panel, help_title, help_desc, main_area, code_labe
 # ASOSIY MUHARRIR OYNASINI SOZLASH FUNKSIYASI
 def create_gui():
     window = tk.Tk()
-    window.title("IlmiTil Dasturlash Muhiti v1.2")
+    window.title("IlmiTil Dasturlash Muhiti v1.3")
     window.geometry("950x650")
     window.configure(bg="#f0f2f5")
 
@@ -310,8 +436,8 @@ def create_gui():
     file_menu = tk.Menu(menu_bar, tearoff=0)
 
     # Menyu punktlariga fayl saqlash tizimini bog'laymiz
-    file_menu.add_command(label="Kodni ochish...", command=lambda: open_file(code_editor))
-    file_menu.add_command(label="Kodni saqlash (.ilmt)...", command=lambda: save_file(code_editor))
+    file_menu.add_command(label="Kodni ochish...", command=lambda: open_file(code_editor, window, line_number_bar))
+    file_menu.add_command(label="Kodni saqlash (.ilmt)...", command=lambda: save_file(code_editor, window))
     file_menu.add_command(label="Yangi nom bilan saqlash...", command=lambda: save_file_as(code_editor, window))
     file_menu.add_separator()
     file_menu.add_command(label="Chiqish", command=window.quit)
@@ -322,6 +448,7 @@ def create_gui():
     examples_menu.add_command(label="1. Oddiy kod (O'zgaruvchiga Saqlash)", command=lambda: load_template("salom", code_editor))
     examples_menu.add_command(label="2. Muloqot kodi (Kiritish & Shartlar)", command=lambda: load_template("muloqot", code_editor))
     examples_menu.add_command(label="3. Matematika kodi (Daraja & Ildiz)", command=lambda: load_template("matematika", code_editor))
+    examples_menu.add_command(label="4. OOP tamoyili kodi (Sinf qoliplari)", command=lambda: load_template("oop_and_try_exc", code_editor))
     menu_bar.add_cascade(label="Namunalar", menu=examples_menu)
 
     window.config(menu=menu_bar)
@@ -360,19 +487,54 @@ def create_gui():
     code_label = tk.Label(main_area, text="Kod yozish maydoni", font=("Arial", 12, "bold"), bg="#f0f2f5", fg="#3c4043")
     code_label.pack(anchor="w", pady=(0, 5))
 
+    editor_frame = tk.Frame(main_area, bd=1, relief=tk.SOLID)
+    editor_frame.pack(fill=tk.BOTH, expand=False, pady=5)
+
+    bar_bg = "#1e1e1e" if is_dark_mode else "#f0f0f0"
+    bar_fg = "#858585" if is_dark_mode else "#a0a0a0"
+
+    line_number_bar = tk.Text(
+        editor_frame,
+        width=4, # Endi 4 ta belgi sig'adigan darajada (9999 qatorgacha yetadi)
+        height=18,
+        padx=5,
+        takefocus=0,
+        border=0,
+        background=bar_bg,
+        foreground=bar_fg,
+        font=("Consolas", 12),
+        state=tk.DISABLED,
+        wrap=tk.NONE
+    )
+    line_number_bar.pack(side=tk.LEFT, fill=tk.Y)
+
     # code_editor = scrolledtext.ScrolledText(font=("Consolas", 12), height=15, bg="#ffffff", fg="#202124", bd=0)
     # code_editor.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-    code_editor = scrolledtext.ScrolledText(main_area, font=("Consolas", 12), height=15, bg="#ffffff", fg="#202124",
-                                            bd=1, relief=tk.SOLID)
-    code_editor.pack(fill=tk.BOTH, expand=True, pady=5)
+    code_editor = scrolledtext.ScrolledText(editor_frame, font=("Consolas", 12), height=18, bg="#ffffff", fg="#202124",
+                                            bd=0, wrap=tk.NONE)
+    code_editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     starter_code = "# Interaktiv dastur\no'zg ism = kirit('Ismingizni kiriting:')\nyoz('Assalomu aleykum, ' + ism + '! Virtual miyam sizni qabul qildi.')"
     code_editor.insert(tk.END, starter_code)
 
     # Eventlarning bog'lanishi
     code_editor.bind("<Return>", lambda event: auto_indent(event, code_editor))
-    code_editor.bind("<KeyRelease>", lambda event: [highlight_syntax(event, code_editor)])
-    highlight_syntax(None, code_editor)
+    code_editor.bind("<KeyRelease>", lambda event: (
+        highlight_syntax(event, code_editor),
+        update_line_numbers(event, code_editor, line_number_bar)
+    ))
+    # code_editor siljiganda chap panelni ham birga majburiy aylantirish qoidasi
+    code_editor.vbar.config(command=lambda *args: (
+        code_editor.yview(*args),
+        line_number_bar.yview_moveto(code_editor.yview()[0])
+    ))
+
+    # Sichqoncha va kursor harakatlanganda raqamlarni to'g'rilab turish
+    code_editor.bind("<MouseWheel>", lambda event: update_line_numbers(event, code_editor, line_number_bar))
+    code_editor.bind("<Button-1>", lambda event: update_line_numbers(event, code_editor, line_number_bar))
+    # raqamlanish darhol ko'rinsin
+    window.after(100, lambda: update_line_numbers(None, code_editor, line_number_bar))
+
     # 3. Boshqaruv tugmalar konteyneri
     button_frame = tk.Frame(main_area, bg="#f0f2f5")
     button_frame.pack(pady=10)
@@ -410,7 +572,7 @@ def create_gui():
 
     theme_button.configure(command=lambda: toggle_theme(
         window, help_panel, help_title, help_desc, main_area, code_label, code_editor, run_button,
-        output_label, theme_button, file_menu, examples_menu, menu_bar, button_frame
+        output_label, theme_button, file_menu, examples_menu, menu_bar, button_frame, editor_frame, line_number_bar
     ))
 
     output_label = tk.Label(main_area, text="Natija (Konsol):", font=("Arial", 12, "bold"), bg="#f0f2f5", fg="#3c4043")
