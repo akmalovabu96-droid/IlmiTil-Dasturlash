@@ -260,7 +260,7 @@ def highlight_syntax(event, code_editor):
     code_editor.tag_raise("string")
     code_editor.tag_raise("comment")
 
-def load_template(template_name, code_editor):
+def load_template(template_name, code_editor, line_number_bar):
     """Oynadan tanlangan variantni kod yozish maydoniga chiqarib beradi"""
     templates = {
         "salom": (
@@ -311,13 +311,13 @@ def load_template(template_name, code_editor):
             "xatoda:\n"
             "    yoz(\"Sinf bilan ishlashda xatolik yuz berdi!\")\n"
         ),
-
     }
 
     if template_name in templates:
         code_editor.delete("1.0", tk.END)
         code_editor.insert("1.0", templates[template_name])
         highlight_syntax(None, code_editor)
+        update_line_numbers(None, code_editor, line_number_bar)
 
 def save_file_as(code_editor, window):
     """Faylni har doim yangi nom va manzil so'rab saqlaydigan funksiya (Save As)"""
@@ -336,7 +336,7 @@ def save_file_as(code_editor, window):
             # Global manzilni yangilaymiz va oyna sarlavhasiga fayl nomini chiqaramiz
             current_file_path = file_path
             file_name = file_path.split('/')[-1]
-            window.title(f"IlmiTil Dasturlash Muhiti v1.2 - {file_name}")
+            window.title(f"IlmiTil Dasturlash Muhiti v1.3 - {file_name}")
 
             messagebox.showinfo("Muvaffaqiyat", "Fayl muvaffaqiyatli saqlandi!")
         except Exception as e:
@@ -376,7 +376,7 @@ def open_file(code_editor, window, line_number_bar):
 
             current_file_path = file_path
             file_name = file_path.split('/')[-1]
-            window.title(f"IlmiTil Dasturlash Muhiti v1.2 - {file_name}")  # Sarlavha yangilanadi
+            window.title(f"IlmiTil Dasturlash Muhiti v1.3 - {file_name}")  # Sarlavha yangilanadi
             # Yuklangan fayl uchun sintaksisni yangilaymiz
             window.after(100, lambda: (
                 highlight_syntax(None, code_editor),
@@ -445,10 +445,10 @@ def create_gui():
     menu_bar.add_cascade(label="Fayl", menu=file_menu)
 
     examples_menu = tk.Menu(menu_bar, tearoff=0)
-    examples_menu.add_command(label="1. Oddiy kod (O'zgaruvchiga Saqlash)", command=lambda: load_template("salom", code_editor))
-    examples_menu.add_command(label="2. Muloqot kodi (Kiritish & Shartlar)", command=lambda: load_template("muloqot", code_editor))
-    examples_menu.add_command(label="3. Matematika kodi (Daraja & Ildiz)", command=lambda: load_template("matematika", code_editor))
-    examples_menu.add_command(label="4. OOP tamoyili kodi (Sinf qoliplari)", command=lambda: load_template("oop_and_try_exc", code_editor))
+    examples_menu.add_command(label="1. Oddiy kod (O'zgaruvchiga Saqlash)", command=lambda: load_template("salom", code_editor, line_number_bar))
+    examples_menu.add_command(label="2. Muloqot kodi (Kiritish & Shartlar)", command=lambda: load_template("muloqot", code_editor, line_number_bar))
+    examples_menu.add_command(label="3. Matematika kodi (Daraja & Ildiz)", command=lambda: load_template("matematika", code_editor, line_number_bar))
+    examples_menu.add_command(label="4. OOP tamoyili kodi (Sinf qoliplari)", command=lambda: load_template("oop_and_try_exc", code_editor, line_number_bar))
     menu_bar.add_cascade(label="Namunalar", menu=examples_menu)
 
     window.config(menu=menu_bar)
