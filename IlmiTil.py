@@ -319,11 +319,46 @@ def load_template(template_name, code_editor, line_number_bar):
         highlight_syntax(None, code_editor)
         update_line_numbers(None, code_editor, line_number_bar)
 
+
+def new_file(code_editor, window, line_number_bar):
+    """Foydalanuvchiga oyna ochib, yangi faylni qaysi papkaga saqlashni o'ziga tanlatadi"""
+    global current_file_path
+
+    # Tayyor oyna ochilib, foydalanuvchiga papka tanlash va nom berish imkonini beradi
+    file_path = filedialog.asksaveasfilename(
+        title="Yangi fayl yaratish va saqlash joyini tanlang",
+        defaultextension=".ilmt",
+        filetypes=[("IlmiTil fayllari", "*.ilmt"), ("Barcha fayllar", "*.*")]
+    )
+    # Agar foydalanuvchi oynani yopmay, saqlash joyini tanlab, nom bergan bo'lsa
+    if file_path:
+        try:
+            # 1. Tanlangan manzilda yangi mutloqo bo'sh fayl yaratamiz
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write("")
+
+                # 2. Kod yozish maydonini (muharrirni) tozalaymiz
+            code_editor.delete("1.0", tk.END)
+            # 3. Global o'zgaruvchini yangi faylning to'liq manziliga bog'laymiz
+            current_file_path = file_path
+            # 4. Sarlavhaga faqat faylning qisqa nomini qirqib chiqaramiz
+            file_name = file_path.split('/')[-1]
+            window.title(f"IlmiTil Dasturlash Muhiti v1.3 - {file_name}")
+            # 5. Qator raqamlari panelini boshlang'ich 1-qatorga tushirib yangilaymiz
+            update_line_numbers(None, code_editor, line_number_bar)
+
+            messagebox.showinfo("Muvaffaqiyat", "Yangi professional sahifa tanlangan papkada ochildi!")
+
+        except Exception as e:
+            messagebox.showerror("Xatolik", f"Fayl yaratishda xatolik yuz berdi:\n{e}")
+
+
 def save_file_as(code_editor, window):
     """Faylni har doim yangi nom va manzil so'rab saqlaydigan funksiya (Save As)"""
     global current_file_path
 
     file_path = filedialog.asksaveasfilename(
+        title="Yangi nomini kiriting",
         defaultextension=".ilmt",
         filetypes=[("IlmiTil fayllari", "*.ilmt"), ("Barcha fayllar", "*.*")]
     )
@@ -336,7 +371,7 @@ def save_file_as(code_editor, window):
             # Global manzilni yangilaymiz va oyna sarlavhasiga fayl nomini chiqaramiz
             current_file_path = file_path
             file_name = file_path.split('/')[-1]
-            window.title(f"IlmiTil Dasturlash Muhiti v1.3 - {file_name}")
+            window.title(f"IlmiTil Dasturlash Muhiti v1.4 - {file_name}")
 
             messagebox.showinfo("Muvaffaqiyat", "Fayl muvaffaqiyatli saqlandi!")
         except Exception as e:
@@ -365,6 +400,7 @@ def open_file(code_editor, window, line_number_bar):
     global current_file_path
 
     file_path = filedialog.askopenfilename(
+        title="Ochish kerak bo'lgan faylni tanlang",
         filetypes=[("IlmiTil fayllari", "*.ilmt"), ("Barcha fayllar", "*.*")]
     )
     if file_path:
@@ -376,7 +412,7 @@ def open_file(code_editor, window, line_number_bar):
 
             current_file_path = file_path
             file_name = file_path.split('/')[-1]
-            window.title(f"IlmiTil Dasturlash Muhiti v1.3 - {file_name}")  # Sarlavha yangilanadi
+            window.title(f"IlmiTil Dasturlash Muhiti v1.4 - {file_name}")  # Sarlavha yangilanadi
             # Yuklangan fayl uchun sintaksisni yangilaymiz
             window.after(100, lambda: (
                 highlight_syntax(None, code_editor),
@@ -428,7 +464,7 @@ def toggle_theme(window, help_panel, help_title, help_desc, main_area, code_labe
 # ASOSIY MUHARRIR OYNASINI SOZLASH FUNKSIYASI
 def create_gui():
     window = tk.Tk()
-    window.title("IlmiTil Dasturlash Muhiti v1.3")
+    window.title("IlmiTil Dasturlash Muhiti v1.4")
     window.geometry("950x650")
     window.configure(bg="#f0f2f5")
 
@@ -436,6 +472,7 @@ def create_gui():
     file_menu = tk.Menu(menu_bar, tearoff=0)
 
     # Menyu punktlariga fayl saqlash tizimini bog'laymiz
+    file_menu.add_command(label="Yangi fayl...", command=lambda: new_file(code_editor, window, line_number_bar))
     file_menu.add_command(label="Kodni ochish...", command=lambda: open_file(code_editor, window, line_number_bar))
     file_menu.add_command(label="Kodni saqlash (.ilmt)...", command=lambda: save_file(code_editor, window))
     file_menu.add_command(label="Yangi nom bilan saqlash...", command=lambda: save_file_as(code_editor, window))
