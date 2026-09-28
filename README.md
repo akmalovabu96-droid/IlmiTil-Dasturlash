@@ -40,7 +40,7 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
     Konsoldagi natija: Siz oynaga kiritgan narsa chiqadi
     ```
 
-### 3. Shartlar (`agar` va `yo'qsa`) | if/else
+### 4. Shartlar (`agar` va `yo'qsa`) | if/else
 *   **Hayotiy o'xshatish:** Ko'chaga chiqishdan oldin derazaga qaraysiz. **Agar** yomg'ir yog'ayotgan bo'lsa — soyabon olasiz. **Yo'qsa (aks holda)** — soyabonsiz ketasiz. Hayotimiz mana shunday tanlovlardan iborat. Kompyuter ham xuddi shunday qaror qabul qiladi.
 *   **IlmiTil qoidasi:**
 
@@ -55,7 +55,7 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
     Konsoldagi natija: Soyabon oling! # Chunki o'zgaruvchiga "yomg'ir" degan qiymat saqlangan.
     ```
 
-### 4. Takrorlanish Tsikl (`toki`) | while
+### 5. Takrorlanish Tsikl (`toki`) | while
 *   **Hayotiy o'xshatish:** Choynakka suv to'ldiryapsiz. To choynak to'lmaguncha quyishda davom etasiz. Yoki mashinaga benzin quyayotganda, bak to'lguniga qadar pistolet ishlab turadi.
 *   **IlmiTil qoidasi:** Ma'lum bir shart bajarilmagunicha kodni qayta-qayta aylantirish(ishlatish):
 
@@ -75,7 +75,7 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
     *   `daraja(asos, ko'rsatkich)` — sonni darajaga ko'tarish (Masalan: `daraja(5, 2)` -> 25.0)
     *   `ildiz(son)` — sondan kvadrat ildiz chiqarish (Masalan: `ildiz(81)` -> 9.0)
 
-### 5. Vazifalar yoki Funksiyalar (`funksiya` va `qaytar`) | def/return
+### 7. Vazifalar yoki Funksiyalar (`funksiya` va `qaytar`) | def/return
 *   **Hayotiy o'xshatish:** Bu xuddi oshxonadagi taom retseptiga o'xshaydi. Masalan, "Palov tayyorlash" degan umumiy rejangiz bor. Bu reja ichiga sabzi to'g'rash, go'sht qovurish, guruch solish kiradi. Siz har safar mehmonga palov qilganda noldan tushuntirmaysiz, shunchaki "Palov damlaymiz" deysiz (tayyor vazifani chaqirasiz) va oxirida stolga tayyor lagan (natija) **qaytadi**.
 *   **IlmiTil qoidasi:** Murakkab ishni bir marta blok sifatida yozib, keyin faqat nomini e'lon qilib ishlatish:
 
@@ -90,7 +90,7 @@ Keling, dasturlash muhitidagi eng asosiy tushunchalarini kundalik hayotimizga bo
     Konsoldagi natija: 56
     ```
 
-### 6. Izohlar (`#`) | Comments
+### 8. Izohlar (`#`) | Comments
 *   **Hayotiy o'xshatish:** Kitob o'qiyotganda chetiga o'zingiz uchun qalam bilan belgi yoki eslatma yozib qo'yishingizga o'xshaydi. Bu eslatma kitob matniga ta'sir qilmaydi, faqat o'zingizga tushunarli bo'lishi uchun xizmat qiladi.
 *   **IlmiTil qoidasi:** Kompyuter bu qatorni o'qimaydi va e'tiborsiz qoldiradi:
 
